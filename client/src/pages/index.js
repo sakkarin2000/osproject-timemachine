@@ -79,10 +79,13 @@ const Home = () => {
       
     };
     reader.readAsDataURL(files[0]);
-    let data = new FormData();
-    data.append('file',files[0]);
+    const data = new FormData();
+    data.append('image',files[0]);
     console.log('thumbnail is');
+    console.log(data.length);
     
+    Axios.post("http://localhost:3001/single", data).then(() => {console.log('upload success');
+  });
   }
   
   return (
