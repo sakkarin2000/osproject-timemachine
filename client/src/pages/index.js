@@ -1,7 +1,7 @@
 import React from "react";
 import "../App.css";
 import { useState } from "react";
-import {ProgressBar} from "react-bootstrap";
+import { ProgressBar } from "react-bootstrap";
 import Axios from "../axios";
 import { makeStyles } from "@material-ui/core/styles";
 import AddIcon from "@material-ui/icons/Add";
@@ -33,7 +33,7 @@ const Home = () => {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => {
     setPreThumbnail(process.env.PUBLIC_URL + "/thumbnail_mock.jpg");
-    setProgress('0');
+    setProgress("0");
     setOpen(true);
   };
   const handleClose = () => {
@@ -50,6 +50,11 @@ const Home = () => {
   const [employeeList, setEmployeeList] = useState([]);
   const [thumbnailForUpload, setThumbnailForUpload] = useState(new FormData());
   const [videoForUpload, setVideoForUpload] = useState(new FormData());
+  const [thumbnailPath, setThumbnailPath] = useState("");
+  const [videoPath, setVideoPath] = useState("");
+  const [videoName, setVideoName] = useState("");
+  const [description, setDescription] = useState("");
+  const [videoList, setVideoList] = useState([]);
 
   const getEmployee = () => {
     Axios.get("/employees").then((response) => {
@@ -78,6 +83,7 @@ const Home = () => {
       ]);
     });
   };
+
   const uploadThumbnail = ({ target: { files } }) => {
     console.log(files[0]);
     let reader = new FileReader();
@@ -95,20 +101,34 @@ const Home = () => {
     data.append("video", files[0]);
     setVideoForUpload(data);
   };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-    Axios.post("/uploadThumbnail", thumbnailForUpload).then(() => {
+  const handleSetThumbnailPath = (path) => {
+    setThumbnailPath(path);
+    console.log("thumbnailPath is:");
+    console.log(thumbnailPath);
+  };
+  const handleSubmit = () => {
+    Axios.post("/uploadThumbnail", thumbnailForUpload).then((response1) => {
+      console.log(response1.data.path);
       console.log("upload thumbnail success");
+      Axios.post("/uploadVideo", videoForUpload, {
+        onUploadProgress: (data) => {
+          //Set the progress value to show the progress bar
+          setProgress(Math.round((100 * data.loaded) / data.total));
+        },
+      }).then((response2) => {
+        console.log(response2.data.path);
+        console.log("upload video success");
+        Axios.post("/addVideo", {
+          videoName: videoName,
+          description: description,
+          thumbnailPath: response1.data.path,
+          videoPath: response2.data.path,
+        }).then(() => {
+          console.log('Add successfully');
+          handleClose();
+        });
+      });
     });
-    Axios.post("/uploadVideo", videoForUpload,{onUploadProgress: data => {
-      //Set the progress value to show the progress bar
-      setProgress(Math.round((100 * data.loaded) / data.total))
-    },}).then(() => {
-      console.log("upload video success");
-      handleClose();
-    });
-    
   };
 
   return (
@@ -187,7 +207,9 @@ const Home = () => {
                 />
               </Button>
               <br></br>
-              {progress && <ProgressBar now={progress} label={`${progress}%`} />}
+              {progress && (
+                <ProgressBar now={progress} label={`${progress}%`} />
+              )}
               <Button variant="contained" component="label" color="secondary">
                 Upload Video Memory
                 <input
@@ -203,6 +225,9 @@ const Home = () => {
                 label="Video Name"
                 type="string"
                 fullWidth
+                onChange={(event) => {
+                  setVideoName(event.target.value);
+                }}
               />
               <TextField
                 autoFocus
@@ -212,6 +237,9 @@ const Home = () => {
                 type="string"
                 rows={4}
                 fullWidth
+                onChange={(event) => {
+                  setDescription(event.target.value);
+                }}
               />
             </FormControl>
           </DialogContent>
