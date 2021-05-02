@@ -9,26 +9,48 @@ app.use(express.json());
 
 const thumbnailStorageEngine = multer.diskStorage({
     destination:(req,res,cb) => {
-        cb(null, '../../files_uploaded/thumbnails');
+        cb(null, '/home/parallels/Desktop/files_uploaded/thumbnails');
     },
     filename: (req,file,cb) => {
         cb(null,Date.now()+"--"+file.originalname);
     },
 
 });
-const upload = multer({storage: thumbnailStorageEngine});
+const videoStorageEngine = multer.diskStorage({
+    destination:(req,res,cb) => {
+        cb(null, '/home/parallels/Desktop/files_uploaded/videos');
+    },
+    filename: (req,file,cb) => {
+        cb(null,Date.now()+"--"+file.originalname);
+    },
 
-app.post('/single', upload.single('image'), (req,res)=>{
+});
+const thumbnailUpload = multer({storage: thumbnailStorageEngine});
+const videoUpload = multer({storage: videoStorageEngine});
+
+app.post('/uploadThumbnail', thumbnailUpload.single('image'), (req,res)=>{
     console.log(req.file);
-    res.send("single file upload success");
+    res.send("single thumbnail upload success");
 })
 
+app.post('/uploadVideo', videoUpload.single('video'), (req,res)=>{
+    console.log(req.file);
+    res.send("single video upload success");
+})
+
+const db_old = mysql.createConnection({
+    user:'sakkarin',
+    host: 'localhost',
+    password: 'sakkarin2543',
+    database: 'employeeSystem',
+
+});
 
 const db = mysql.createConnection({
     user:'sakkarin',
     host: 'localhost',
     password: 'sakkarin2543',
-    database: 'employeeSystem',
+    database: 'timeMachineSystem',
 
 });
 
@@ -40,7 +62,7 @@ app.post('/create',(req, res) => {
     const position = req.body.position;
     const wage = req.body.wage;
 
-    db.query('INSERT INTO employees (name, age, country, position, wage) VALUES (?,?,?,?,?)',
+    db_old.query('INSERT INTO employees (name, age, country, position, wage) VALUES (?,?,?,?,?)',
     [name,age,country,position,wage],
     (err,result)=> {
         if(err){
@@ -53,7 +75,7 @@ app.post('/create',(req, res) => {
 })
 
 app.get('/employees',(req,res) => {
-    db.query('SELECT * FROM employees', (err,result)=>{
+    db_old.query('SELECT * FROM employees', (err,result)=>{
         if(err){
             console.log(err)
         }else{
@@ -66,3 +88,5 @@ app.listen(3001, ()=> {
     console.log('Yeah your server is running on port 3001');
 });
 
+
+//INSERT INTO videos(videoName, publishDateTime, thumbnailPath, filePath, description, editDateTime) VALUES ('testname',CURRENT_TIMESTAMP,'testThmbPath','testFilePath','HelloDescribe',CURRENT_TIMESTAMP);
