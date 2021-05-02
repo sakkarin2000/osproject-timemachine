@@ -37,53 +37,29 @@ const Home = () => {
     setOpen(true);
   };
   const handleClose = () => {
+    setPreThumbnail(process.env.PUBLIC_URL + "/thumbnail_mock.jpg");
+    setProgress("0");
     setOpen(false);
   };
-  const [name, setName] = useState("");
-  const [age, setAge] = useState(0);
-  const [country, setCountry] = useState("");
-  const [position, setPosition] = useState("");
-  const [wage, setWage] = useState(0);
+
   // const displayInfo = () => {
   //   console.log(name + age + country + position + wage);
   // };
   const [employeeList, setEmployeeList] = useState([]);
   const [thumbnailForUpload, setThumbnailForUpload] = useState(new FormData());
   const [videoForUpload, setVideoForUpload] = useState(new FormData());
-  const [thumbnailPath, setThumbnailPath] = useState("");
-  const [videoPath, setVideoPath] = useState("");
   const [videoName, setVideoName] = useState("");
   const [description, setDescription] = useState("");
   const [videoList, setVideoList] = useState([]);
 
-  const getEmployee = () => {
-    Axios.get("/employees").then((response) => {
+  const getVideos = () => {
+    Axios.get("/videos").then((response) => {
       console.log(response);
-      setEmployeeList(response.data);
+      setVideoList(response.data);
     });
   };
 
-  const addEmployee = () => {
-    Axios.post("/create", {
-      name: name,
-      age: age,
-      country: country,
-      position: position,
-      wage: wage,
-    }).then(() => {
-      setEmployeeList([
-        ...employeeList,
-        {
-          name: name,
-          age: age,
-          country: country,
-          position: position,
-          wage: wage,
-        },
-      ]);
-    });
-  };
-
+  
   const uploadThumbnail = ({ target: { files } }) => {
     console.log(files[0]);
     let reader = new FileReader();
@@ -101,11 +77,7 @@ const Home = () => {
     data.append("video", files[0]);
     setVideoForUpload(data);
   };
-  const handleSetThumbnailPath = (path) => {
-    setThumbnailPath(path);
-    console.log("thumbnailPath is:");
-    console.log(thumbnailPath);
-  };
+ 
   const handleSubmit = () => {
     Axios.post("/uploadThumbnail", thumbnailForUpload).then((response1) => {
       console.log(response1.data.path);
@@ -134,47 +106,13 @@ const Home = () => {
   return (
     <div className="App">
       <div className="information">
-        <label>Name : </label>
-        <input
-          type="text"
-          onChange={(event) => {
-            setName(event.target.value);
-          }}
-        ></input>
-        <label>Age: </label>
-        <input
-          type="number"
-          onChange={(event) => {
-            setAge(event.target.value);
-          }}
-        ></input>
-        <label>Country : </label>
-        <input
-          type="text"
-          onChange={(event) => {
-            setCountry(event.target.value);
-          }}
-        ></input>
-        <label>Position : </label>
-        <input
-          type="text"
-          onChange={(event) => {
-            setPosition(event.target.value);
-          }}
-        ></input>
-        <label>Wage (year) : </label>
-        <input
-          type="number"
-          onChange={(event) => {
-            setWage(event.target.value);
-          }}
-        ></input>
-        <button onClick={addEmployee}>Submit</button>
-        <button className="information" onClick={getEmployee}>
-          Show Employees
+      
+        <button className="information" onClick={getVideos}>
+          Show Videos
         </button>
-        {employeeList.map((val, key) => {
-          return <div>{val.name}</div>;
+        {videoList.map((val, key) => {
+          return <div><img src={val.thumbnailPath} width="auto" height="150px"></img>
+            {val.id+" "+val.videoName+" "+val.description+" \n"+val.thumbnailPath+" \n"+val.filePath+" \n"+val.publishDateTime+" "+val.editDateTime+" \n"}<br></br></div>;
         })}
       </div>
       <div>

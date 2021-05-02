@@ -9,7 +9,7 @@ app.use(express.json());
 
 const thumbnailStorageEngine = multer.diskStorage({
   destination: (req, res, cb) => {
-    cb(null, "/home/parallels/Desktop/files_uploaded/thumbnails");
+    cb(null, "../../files_uploaded/thumbnails");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "--" + file.originalname);
@@ -93,8 +93,8 @@ app.post("/addVideo", (req, res) => {
   );
 });
 
-app.get("/employees", (req, res) => {
-  db_old.query("SELECT * FROM employees", (err, result) => {
+app.get("/videos", (req, res) => {
+  db.query("SELECT * FROM videos", (err, result) => {
     if (err) {
       console.log(err);
     } else {
@@ -102,6 +102,7 @@ app.get("/employees", (req, res) => {
     }
   });
 });
+
 
 app.listen(3001, () => {
   console.log("Yeah your server is running on port 3001");
