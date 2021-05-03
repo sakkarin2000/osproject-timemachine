@@ -93,6 +93,22 @@ app.post("/addVideo", (req, res) => {
   );
 });
 
+app.put('/update',(req,res) => {
+  const id = req.body.id;
+  const videoName = req.body.videoName;
+  const description = req.body.description ;
+  db.query("UPDATE SET videos description = ?, videoName = ? WHERE id = ?", [description, videoName, id], (err, result)=> {
+    if(err){
+      console.log(err);
+    }else{
+      res.send(result);
+    }
+  });
+});
+// UPDATE 
+// app.delete();
+
+
 app.get("/videos", (req, res) => {
   db.query("SELECT * FROM videos", (err, result) => {
     if (err) {

@@ -32,6 +32,7 @@ const Home = () => {
   const [preThumbnail, setPreThumbnail] = useState("");
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
   const handleClickOpen = () => {
     setPreThumbnail(process.env.PUBLIC_URL + "/thumbnail_mock.jpg");
     setProgress("0");
@@ -41,6 +42,14 @@ const Home = () => {
     setPreThumbnail(process.env.PUBLIC_URL + "/thumbnail_mock.jpg");
     setProgress("0");
     setOpen(false);
+  };
+
+  function handleEditOpen(test) {
+    console.log(test);
+    setOpen2(true);
+  };
+  const handleEditClose = () => {
+    setOpen2(false);
   };
 
   // const displayInfo = () => {
@@ -78,7 +87,9 @@ const Home = () => {
     data.append("video", files[0]);
     setVideoForUpload(data);
   };
-  
+  const handleUpdate = () =>{
+
+  }
   const handleSubmit = () => {
     
     Axios.post("/uploadVideo", videoForUpload, {
@@ -114,7 +125,7 @@ const Home = () => {
         </button>
         {videoList.map((val, key) => {
           return <div><img src={webDomain+val.thumbnailPath} width="auto" height="150px"></img><br></br>
-            {val.id+" "+val.videoName+" "+val.description+" \n"+val.filePath+" \n"+val.publishDateTime+" "+val.editDateTime+" \n"}<br></br></div>;
+            {val.id+" "+val.videoName+" "+val.description+" \n"+val.filePath+" \n"+val.publishDateTime+" "+val.editDateTime+" \n"}<br></br><button onClick={handleEditOpen}>Edit</button></div>;
         })}
       </div>
       <div>
@@ -189,6 +200,49 @@ const Home = () => {
             </Button>
             <Button onClick={handleSubmit} color="primary">
               Add
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={open2}
+          onClose={handleEditClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <DialogTitle id="form-dialog-title">Update Video Details</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Edit your video details</DialogContentText>
+            <FormControl>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="Video Name"
+                type="string"
+                fullWidth
+                onChange={(event) => {
+                  setVideoName(event.target.value);
+                }}
+              />
+              <TextField
+                autoFocus
+                id="standard-multiline-static"
+                label="Description"
+                multiline
+                type="string"
+                rows={4}
+                fullWidth
+                onChange={(event) => {
+                  setDescription(event.target.value);
+                }}
+              />
+            </FormControl>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleEditClose} color="secondary">
+              Cancel
+            </Button>
+            <Button onClick={handleUpdate} color="secondary">
+              Update
             </Button>
           </DialogActions>
         </Dialog>
