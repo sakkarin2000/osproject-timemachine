@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 const Home = () => {
+  const webDomain="http://10.211.55.3/";
   const [progress, setProgress] = useState();
   const classes = useStyles();
   const [preThumbnail, setPreThumbnail] = useState("");
@@ -77,19 +78,20 @@ const Home = () => {
     data.append("video", files[0]);
     setVideoForUpload(data);
   };
- 
+  
   const handleSubmit = () => {
-    Axios.post("/uploadThumbnail", thumbnailForUpload).then((response1) => {
-      console.log(response1.data.path);
-      console.log("upload thumbnail success");
-      Axios.post("/uploadVideo", videoForUpload, {
-        onUploadProgress: (data) => {
-          //Set the progress value to show the progress bar
-          setProgress(Math.round((100 * data.loaded) / data.total));
-        },
-      }).then((response2) => {
-        console.log(response2.data.path);
-        console.log("upload video success");
+    
+    Axios.post("/uploadVideo", videoForUpload, {
+      onUploadProgress: (data) => {
+        //Set the progress value to show the progress bar
+        setProgress(Math.round((100 * data.loaded) / data.total));
+      },
+    }).then((response2) => {
+      console.log(response2.data.path);
+      console.log("upload video success");
+      Axios.post("/uploadThumbnail", thumbnailForUpload).then((response1) => {
+        console.log(response1.data.path);
+        console.log("upload thumbnail success");
         Axios.post("/addVideo", {
           videoName: videoName,
           description: description,
@@ -111,8 +113,8 @@ const Home = () => {
           Show Videos
         </button>
         {videoList.map((val, key) => {
-          return <div><img src={val.thumbnailPath} width="auto" height="150px"></img>
-            {val.id+" "+val.videoName+" "+val.description+" \n"+val.thumbnailPath+" \n"+val.filePath+" \n"+val.publishDateTime+" "+val.editDateTime+" \n"}<br></br></div>;
+          return <div><img src={webDomain+val.thumbnailPath} width="auto" height="150px"></img><br></br>
+            {val.id+" "+val.videoName+" "+val.description+" \n"+val.filePath+" \n"+val.publishDateTime+" "+val.editDateTime+" \n"}<br></br></div>;
         })}
       </div>
       <div>

@@ -9,7 +9,7 @@ app.use(express.json());
 
 const thumbnailStorageEngine = multer.diskStorage({
   destination: (req, res, cb) => {
-    cb(null, "../../files_uploaded/thumbnails");
+    cb(null, "/var/www/html/files_uploaded/thumbnails");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "--" + file.originalname);
@@ -17,7 +17,7 @@ const thumbnailStorageEngine = multer.diskStorage({
 });
 const videoStorageEngine = multer.diskStorage({
   destination: (req, res, cb) => {
-    cb(null, "/home/parallels/Desktop/files_uploaded/videos");
+    cb(null, "/var/www/html/files_uploaded/videos");
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + "--" + file.originalname);
@@ -28,13 +28,13 @@ const videoUpload = multer({ storage: videoStorageEngine });
 
 app.post("/uploadThumbnail", thumbnailUpload.single("image"), (req, res) => {
   console.log(req.file);
-  res.send({ status: "single thumbnail upload success",path:req.file.path
+  res.send({ status: "single thumbnail upload success",path:req.file.path.substring(13)
  });
 });
 
 app.post("/uploadVideo", videoUpload.single("video"), (req, res) => {
   console.log(req.file);
-  res.send({ status: "single video upload success",path:req.file.path
+  res.send({ status: "single video upload success",path:req.file.path.substring(13)
 });
 });
 
