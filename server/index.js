@@ -97,16 +97,27 @@ app.put('/update',(req,res) => {
   const id = req.body.id;
   const videoName = req.body.videoName;
   const description = req.body.description ;
-  db.query("UPDATE SET videos description = ?, videoName = ? WHERE id = ?", [description, videoName, id], (err, result)=> {
+  db.query("UPDATE videos SET description = ?, videoName = ?,editDateTime = CURRENT_TIMESTAMP WHERE id =?", [description, videoName, id], (err, result)=> {
     if(err){
       console.log(err);
     }else{
+      console.log(res);
       res.send(result);
     }
   });
 });
 // UPDATE 
-// app.delete();
+app.delete('/delete/:id',(req,res)=>{
+  const id = req.params.id;
+  db.query("DELETE FROM videos WHERE id = ?",id, (err,result)=>{
+    if(err){
+      console.log(err);
+    }else{
+      console.log(res);
+      res.send(result);
+    }
+  });
+});
 
 
 app.get("/videos", (req, res) => {
